@@ -1,4 +1,4 @@
-name: CI/CD Pipeline
+name: Build Android APK
 
 on:
   push:
@@ -11,19 +11,25 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       
-      - name: Use Node.js
-        uses: actions/setup-node@v4
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
         with:
-          node-version: '20'
+          flutter-version: '3.22.0'
+      
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
       
       - name: Install dependencies
-        run: npm install
+        run: flutter pub get
       
-      - name: Build APK/EXE
-        run: npm run build
+      - name: Build APK
+        run: flutter build apk --release
       
-      - name: Upload artifact
+      - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
-          name: aimlock-build
-          path: aimlock.exe
+          name: app-release
+          path: build/app/outputs/flutter-apk/app-release.apk
